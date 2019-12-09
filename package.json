@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/USBrido/tinyapp/issues"
   },
-  "homepage": "https://github.com/USBrido/tinyapp#readme"
+  "homepage": "https://github.com/USBrido/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }

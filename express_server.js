@@ -49,6 +49,17 @@ function generateRandomString() {
 };
 
 app.get("/u/:shortURL", (req, res) => {
-  // const longURL = 
-  res.redirect(longURL);
+res.redirect(longURL);
 });
+
+//Deletes posts ()
+app.post("/urls/:shortURL/delete", (req, res) => {
+  delete urlDatabase[req.params.shortURL];
+  res.redirect('/urls');
+});
+
+// //Updates posts ()
+// app.post("/urls/:shortURL/", (req, res) => {
+//   req.delete(urlDatabase.shortURL);
+//   res.redirect('/urls');
+// });

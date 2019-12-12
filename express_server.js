@@ -29,9 +29,27 @@ const users = {
 
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = { id: req.cookies["userId"] }
-  res.render("urls_new", templateVars);
+  const user = req.cookies["userId"];
+  if (user) {
+    let templateVars = { id: req.cookies["userId"], user: users[req.cookies["userId"]] }
+    res.render("urls_new", templateVars);  
+  } else {
+    res.redirect("/login")
+  }
 });
+
+// app.get("/urls/new", (req, res) => {
+//   let email = req.body.email;
+//   let password = req.body.password;
+//   let user = emailVerify(email);
+//   if (user && user.password === password) {
+//     let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[req.cookies["userId"]], };
+//     res.render("urls_new", templateVars);
+//   } else {
+//   res.redirect("/login");
+//   }
+// });
+
 
 app.get("/hello", (req, res) => {
   res.render("<html><body>Hello <b>World</b></body></html>\n");
@@ -144,13 +162,6 @@ app.listen(PORT, () => {
 
 /*
 Things to be addressed
-
-A user can register (done)
-A user cannot register with an email address that has already been used (done)
-A user can log in with a correct email/password  (done)
-A user sees the correct information in the header (done)
-A user cannot log in with an incorrect email/password (done)
-A user can log out (done)
 
 
 

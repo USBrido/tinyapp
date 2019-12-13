@@ -162,9 +162,9 @@ app.post("/login", (req, res) => {
     console.log(hashedPassword);
     req.session.userId = userId;
   } else {
-    res.sendStatus(403); return
+    res.redirect("/urls"); //create a Error/instructions view to handle errors
   };
-  res.redirect("/urls");
+  ;
 })
 
 //set logout

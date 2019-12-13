@@ -87,8 +87,6 @@ app.get("/hello", (req, res) => {
 app.get("/urls", (req, res) => {
   const user = req.cookies["userId"];
   if (user) {
-    console.log(urlDatabase)
-    console.log(urlsForUsers(req.cookies["userId"]))
   let templateVars = { urls: urlsForUsers(req.cookies["userId"]), user: users[req.cookies["userId"]] }
   res.render("urls_index", templateVars);
   } else {
@@ -142,9 +140,7 @@ app.post("/urls/:id/", (req, res) => {
   const user = req.cookies["userId"];
   if (user) {
   const shortPass = req.params.id;
-  console.log(shortPass)
   urlDatabase[shortPass] = { longURL: req.body.longURL, userId: req.cookies["userId"]}
-  console.log(urlDatabase)
   res.redirect('/urls/');
   } else {
   res.redirect("/login")  
@@ -162,13 +158,15 @@ function emailVerify(email) {
 };
 
 //Set Login route w/ cookie
-//bcrypt.compareSync("purple-monkey-dinosaur", hashedPassword); 
+//bcrypt.compareSync(password, hashedPassword); 
 //
 app.post("/login", (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
   let user = emailVerify(email);
-  if (user && user.password === password) {
+  let hashedPassword = bcrypt.hashSync(password, 10);
+  if (user && bcrypt.compareSync(password, hashedPassword)) {
+    console.log(hashedPassword);
     res.cookie("userId", user.userId);
   } else {
     res.sendStatus(403); return
@@ -201,7 +199,7 @@ app.post("/register", (req, res) => {
   //const password = bcrypt.hashSync(password, 10); 
   if (!emailVerify(req.body.email)) {
     const userId = generateRandomString();
-    let newUser = { userId: userId, email: req.body.email, password: req.body.password };
+    let newUser = { userId: userId, email: req.body.email, password: bcrypt.hashSync(req.body.password, 10) };
     users[userId] = newUser;
     res.cookie("userId", userId);
     res.redirect("/urls");

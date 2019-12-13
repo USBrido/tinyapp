@@ -3,7 +3,8 @@ const app = express();
 const PORT = 8080; //default port, 8080 (might have some issues when running, just in case I forget that)
 const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
-var cookieSession = require('cookie-session')
+const cookieSession = require('cookie-session');
+const helper = require("./helper");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
@@ -150,21 +151,12 @@ app.post("/urls/:id/", (req, res) => {
   }
 });
 
-// email verification
-function emailVerify(email) {
-  for (userId in users) {
-    if (email === users[userId].email) {
-      return users[userId];
-    }
-  }
-  return false
-};
 
 //Set Login route w/ cookie
 app.post("/login", (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
-  let user = emailVerify(email);
+  let user = helper.emailVerify(email, users);
   let hashedPassword = bcrypt.hashSync(password, 10);
   if (user && bcrypt.compareSync(password, hashedPassword)) {
     console.log(hashedPassword);
@@ -199,7 +191,7 @@ app.get("/login", (req, res) => {
 //
 app.post("/register", (req, res) => {
   //const password = bcrypt.hashSync(password, 10); 
-  if (!emailVerify(req.body.email)) {
+  if (!helper.emailVerify(req.body.email)) {
     const userId = generateRandomString();
     let newUser = { userId: userId, email: req.body.email, password: bcrypt.hashSync(req.body.password, 10) };
     users[userId] = newUser;

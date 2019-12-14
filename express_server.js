@@ -13,7 +13,6 @@ app.use(cookieSession({
   keys:['userId']
 }));
 
-
 const getListOfURLs = () => {
   obj = {}
   Object.keys(urlDatabase).map(item => {
@@ -24,16 +23,7 @@ const getListOfURLs = () => {
 
 const getLongFromShort = (short) => {
   return urlDatabase[short].longURL
-
 }
-
-// const getPassword = () => {
-//   obj = {}
-//   Object.keys(urlDatabase).map(item => {
-//     obj[item] = urlDatabase[item]['password']
-//   })
-//   return obj;
-// }
 
 function urlsForUsers(userId) {
   obj = {}
@@ -45,7 +35,6 @@ function urlsForUsers(userId) {
   return obj;
 };
 
-
 const urlDatabase = {
   "b2xVn2": {
     longURL: "http://www.lighthouselabs.ca",
@@ -56,8 +45,6 @@ const urlDatabase = {
     userId: "users[userId].id}"
   }
 };
-
-// console.log(getListOfURLs());
 
 const users = {
   //   "userRandomID": {
@@ -71,7 +58,6 @@ const users = {
   //     password: "dishwasher-funk"
   //   }
 }
-
 
 app.get("/urls/new", (req, res) => {
   const user = req.session.userId;
@@ -124,10 +110,6 @@ function generateRandomString() {
   res.redirect(getLongFromShort(req.params.shortURL));
 });
 
-// app.get("/u/:id", (req, res) => {
-//   res.redirect(longURL);
-// });
-
 //Deletes posts ()
   app.post("/urls/:shortURL/delete", (req, res) => {
   const user = req.session.userId;
@@ -164,12 +146,10 @@ app.post("/login", (req, res) => {
   } else {
     res.redirect("/urls"); //create a Error/instructions view to handle errors
   };
-  ;
 })
 
 //set logout
 app.post("/logout", (req, res) => {
-  // res.clearCookie('userId');
   req.session.userId = undefined;
   res.redirect('/urls/');
 })
@@ -187,8 +167,6 @@ app.get("/login", (req, res) => {
 });
 
 //register new-user
-// 
-//
 app.post("/register", (req, res) => {
   //const password = bcrypt.hashSync(password, 10); 
   if (!helper.emailVerify(req.body.email)) {
@@ -205,10 +183,3 @@ app.post("/register", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on ${PORT}!`);
 });
-
-/*
-Things to be addressed
-
-
-
-*/

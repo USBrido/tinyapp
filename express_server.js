@@ -141,10 +141,10 @@ app.post("/login", (req, res) => {
   let user = helper.emailVerify(email, users);
   let hashedPassword = bcrypt.hashSync(password, 10);
   if (user && bcrypt.compareSync(password, hashedPassword)) {
-    console.log(hashedPassword);
     req.session.userId = userId;
+    res.redirect("/urls");
   } else {
-    res.redirect("/urls"); //create a Error/instructions view to handle errors
+    res.render("login", { error: 'Email and password combination is invalid' });
   };
 })
 
@@ -156,7 +156,7 @@ app.post("/logout", (req, res) => {
 
 //set register-redirect
 app.get("/register", (req, res) => {
-  let templateVars = { urls: getListOfURLs(), user: undefined}
+  let templateVars = { urls: getListOfURLs(), user: req.session.userId}
   res.render("register", templateVars);
 });
 
@@ -169,15 +169,23 @@ app.get("/login", (req, res) => {
 //register new-user
 app.post("/register", (req, res) => {
   //const password = bcrypt.hashSync(password, 10); 
-  if (!helper.emailVerify(req.body.email)) {
-    const userId = generateRandomString();
-    let newUser = { userId: userId, email: req.body.email, password: bcrypt.hashSync(req.body.password, 10) };
-    users[userId] = newUser;
-    req.session.userId = userId;
-    res.redirect("/urls");
-  } else {
-    res.sendStatus(400);
-  }
+  // if email is empty || password is empty
+    // error = 'must provide email and password'
+  // if email and password cominatino is invalid
+    // error = 'password and email combination do not match'
+  // set cookie
+  // redirect to uri
+  if (!req.body.email || !req.body.password) {
+    return   res.render("register", { error: 'Email or Password was not provided'});
+  };
+  if (helper.emailVerify(req.body.email)) {
+    return  res.render("register", { error: 'Email already exists, please login'});
+  };
+  const userId = generateRandomString();
+  let newUser = { userId: userId, email: req.body.email, password: bcrypt.hashSync(req.body.password, 10) };
+  users[userId] = newUser;
+  req.session.userId = userId;
+  res.redirect("/urls");
 });
 
 app.listen(PORT, () => {

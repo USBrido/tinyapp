@@ -20,11 +20,11 @@ const getListOfURLs = () => {
   })
   return obj;
 }
-//serches long urls based on their short url
+
 const getLongFromShort = (short) => {
   return urlDatabase[short].longURL
 }
-//searches the database for the urls of a given user
+
 function urlsForUsers(userId) {
   obj = {}
   Object.keys(urlDatabase).map(item => {
@@ -74,7 +74,6 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  console.log(req.session.userId)
   const user = req.session.userId
   if (user) {
     let templateVars = { urls: urlsForUsers(req.session.userId), user: users[req.session.userId] }
@@ -133,7 +132,6 @@ app.post("/urls/:id/", (req, res) => {
   }
 });
 
-
 //Set Login route w/ cookie
 app.post("/login", (req, res) => {
   let email = req.body.email;
@@ -181,6 +179,3 @@ app.post("/register", (req, res) => {
   res.redirect("/urls");
 });
 
-app.listen(PORT, () => {
-  console.log(`Example app listening on ${PORT}!`);
-});

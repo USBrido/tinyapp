@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const PORT = 8080; 
+const PORT = 8080;
 const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
 const cookieSession = require('cookie-session');
@@ -69,10 +69,6 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
-app.get("/hello", (req, res) => {
-  res.render("<html><body>Hello <b>World</b></body></html>\n");
-});
-
 app.get("/urls", (req, res) => {
   const user = req.session.userId
   if (user) {
@@ -137,8 +133,7 @@ app.post("/login", (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
   let user = helper.emailVerify(email, users);
-  let hashedPassword = bcrypt.hashSync(password, 10);
-  if (user && bcrypt.compareSync(password, hashedPassword)) {
+  if (user && bcrypt.compareSync(password, user.password)) {
     req.session.userId = userId;
     res.redirect("/urls");
   } else {
@@ -148,20 +143,28 @@ app.post("/login", (req, res) => {
 
 //set logout
 app.post("/logout", (req, res) => {
-  req.session.userId = undefined;
+  req.session = null
   res.redirect('/urls/');
 })
 
 //set register-redirect
 app.get("/register", (req, res) => {
-  let templateVars = { urls: getListOfURLs(), user: req.session.userId }
-  res.render("register", templateVars);
+  if (req.session.userId) {
+    res.redirect('/urls/');
+  } else {
+    let templateVars = { urls: getListOfURLs(), user: req.session.userId }
+    res.render("register", templateVars);
+  }
 });
 
 //set login page
 app.get("/login", (req, res) => {
-  let templateVars = { urls: getListOfURLs(), user: undefined }
-  res.render("login", templateVars);
+  if (req.session.userId) {
+    res.redirect('/urls/');
+  } else {
+    let templateVars = { urls: getListOfURLs(), user: undefined }
+    res.render("login", templateVars);
+  }
 });
 
 //register new-user
@@ -179,3 +182,6 @@ app.post("/register", (req, res) => {
   res.redirect("/urls");
 });
 
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}!`);
+});
